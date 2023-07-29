@@ -40,6 +40,9 @@ public class RegularVendingMachine{
     public Change dispenseChange(int amountToPay, int amountInserted) {
         int changeAmount = amountInserted - amountToPay;
         ArrayList<ArrayList<Denomination>> changeDenominations = new ArrayList<>();
+        for(Denomination denomination : userDenominations){
+            addDenomination(denomination.getValue());
+        }
         sortDenominationsDescending();
     
         for (int i = 0; i < denominations.size() && changeAmount > 0; i++) {
@@ -86,6 +89,7 @@ public class RegularVendingMachine{
             }
         }
 
+        userDenominations.clear();
         return new Change(changeDenominations);
     }
 
@@ -392,5 +396,9 @@ public class RegularVendingMachine{
 
     public Sales getSalesRecord() {
         return salesRecord;
+    }
+
+    public void clearUserDenominations(){
+        userDenominations.clear();
     }
 }

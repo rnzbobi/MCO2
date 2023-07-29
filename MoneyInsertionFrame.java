@@ -10,7 +10,7 @@ public class MoneyInsertionFrame extends JFrame {
     private Map<String, Integer> denominations;
     private int totalAmount;
     private boolean isOwnerMode = false;
-    private boolean isReplenish = true;
+    private boolean isReplenish = false;
 
     public MoneyInsertionFrame() {
         super("Balance");

@@ -76,6 +76,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
     private int ownerBalance = 0;
     private boolean isOwnerMode = false;
     private boolean isReplenish = false;
+    private boolean isSubmit = false;
     private int userBalance = 0;
     private JTextField balanceToTransferField; // Add balanceToTransferField as a class-level variable
     
@@ -115,8 +116,6 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
 
         vendingMachineFactory = new VendingMachineFactory();
         vendingMachine = vendingMachineFactory.createRegularVendingMachine(machineName, maxItems);
-        System.out.println(vendingMachine.getName());
-        System.out.println(vendingMachine.getNumberOfSlots());
         currentSlots = 0;
         addPredefinedIngredients();
 
@@ -145,13 +144,6 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
             @Override
             public void actionPerformed(ActionEvent e) {
                 showAddFoodItemDialog();
-                for(int i = 0; i < vendingMachine.getSlots().size(); i++){
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getName());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getCalories());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getPrice());
-            System.out.println(vendingMachine.countIngredient(vendingMachine.getSlots().get(i).get(0).getName()));
-            System.out.println("");
-        }
             }
         });
 
@@ -160,6 +152,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
         insertMoneyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //isReplenish = false;
                 // Show the MoneyInsertionFrame
                 MoneyInsertionFrame moneyInsertionFrame = new MoneyInsertionFrame();
                 moneyInsertionFrame.setBalanceUpdateListener(FoodMenuApp.this);
@@ -184,13 +177,6 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
             public void actionPerformed(ActionEvent e) {
                 // Implement the logic to set an item here
                 showSetPriceDialog();
-                for(int i = 0; i < vendingMachine.getSlots().size(); i++){
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getName());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getCalories());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getPrice());
-            System.out.println(vendingMachine.countIngredient(vendingMachine.getSlots().get(i).get(0).getName()));
-            System.out.println("");
-        }
             }
         });
 
@@ -243,14 +229,6 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                 } else {
                     showErrorMessage("Please select a valid predefined item.", "Error");
                 }
-
-                for(int i = 0; i < vendingMachine.getSlots().size(); i++){
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getName());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getCalories());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getPrice());
-            System.out.println(vendingMachine.countIngredient(vendingMachine.getSlots().get(i).get(0).getName()));
-            System.out.println("");
-        }
             }
 
             
@@ -262,6 +240,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                isSubmit = true;
                 String selectedItemName = selectItemField.getText();
                 FoodItem selectedItem = findPredefinedItem(selectedItemName);
                 StringBuilder stringBuilder = new StringBuilder();
@@ -283,7 +262,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                             for(int j = 0; j < change.getDenominations().get(i).size(); j++){
                                 count++;
                             }
-                            stringBuilder.append(count + "\n");
+                            stringBuilder.append(": " + count + "\n");
                         }
                         stringBuilder.append("+-----------------------+\n");
                         stringBuilder.append("Thank you for Purchasing!");
@@ -293,15 +272,28 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                         vendingMachine.removeItem(selectedItemName);
                         vendingMachine.updateCurrentInventory();
                         JOptionPane.showMessageDialog(null,receipt,"RECEIPT", JOptionPane.INFORMATION_MESSAGE);
+                        onBalanceUpdated(0);
                     }
                     else{
+                        for(int i = 0; i < vendingMachine.getUserDenominations().size(); i++){
+                            vendingMachine.collectDenomination(vendingMachine.getUserDenominations().get(i).getValue(), 1);
+                        }
+                        vendingMachine.clearUserDenominations();
+                        vendingMachine.updateCurrentBalance();
+                        vendingMachine.updateCurrentUserBalance();
+                        updateBalanceLabel();
                         showErrorMessage("Insufficient Change", "Error");
                     }
                 }else if(selectedItem.getQuantity() == 0){
+                    vendingMachine.clearUserDenominations();
+                    vendingMachine.updateCurrentUserBalance();
+                    updateBalanceLabel();
                     showErrorMessage("Item is SOLD OUT!", "Error");
                 } else {
                     showErrorMessage("Please select a valid predefined item.", "Error");
                 }
+
+                updateQuantityDisplay(selectedItem);
             }
         });
         buttonPanel.add(submitButton);
@@ -330,15 +322,6 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
         buttonPanel.add(exitButton);
         showFundsInsertionDialog();
 
-        for(int i = 0; i < vendingMachine.getDenominations().size(); i++){
-            for(int j = 0; j < vendingMachine.getDenominations().get(i).size(); j++){
-                System.out.println(vendingMachine.getDenominations().get(i).get(j).getValue());
-                System.out.println("");
-            }
-        }
-
-        System.out.println(vendingMachine.getCurrentBalance());
-
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.pack();
@@ -363,22 +346,26 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
             vendingMachine.updateCurrentBalance();
             ownerBalance += balance;
             isReplenish = false;
-        } else {
+        } else if (isSubmit){
+            vendingMachine.updateCurrentUserBalance();
+            vendingMachine.updateCurrentBalance();
+            isSubmit = false;
+        }
+        else {
             // Update the user's balance label
             vendingMachine.addUserDenomination(balance);
-            vendingMachine.addDenomination(balance);
             vendingMachine.updateCurrentBalance();
             vendingMachine.updateCurrentUserBalance();
             userBalance += balance; // Add the new amount to the existing userBalance
         }
     
         // Update the balance label with the current balances
-        balanceLabel.setText("BALANCE: " + userBalance + "                                                                                                  OWNER'S BALANCE: " + ownerBalance);
+        balanceLabel.setText("BALANCE: " + vendingMachine.getCurrentUserBalance() + "                                                                                                  OWNER'S BALANCE: " + vendingMachine.getCurrentBalance());
     }
 
     // Helper method to update the balance label with the current owner balance
     private void updateBalanceLabel() {
-        balanceLabel.setText("BALANCE: 0                                                                                                  OWNER'S BALANCE: " + ownerBalance);
+        balanceLabel.setText("BALANCE: 0                                                                                                  OWNER'S BALANCE: " + vendingMachine.getCurrentBalance());
     }
 
     public static FoodMenuApp getInstance(String machineName) {
@@ -428,8 +415,8 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
         });
 
         // Create the submit button
-        JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
+        JButton submitMoneyButton = new JButton("Submit");
+        submitMoneyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String amountStr = moneyField.getText();
@@ -460,7 +447,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
         // Create a panel to hold the clear, submit, and finish buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.add(clearButton);
-        buttonPanel.add(submitButton);
+        buttonPanel.add(submitMoneyButton);
         buttonPanel.add(finishButton);
     
         // Create a panel to hold the moneyField and balanceToTransferField
@@ -549,14 +536,6 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                 System.exit(0);
             }
         }
-
-        for(int i = 0; i < vendingMachine.getSlots().size(); i++){
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getName());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getCalories());
-            System.out.println(vendingMachine.getSlots().get(i).get(0).getPrice());
-            System.out.println(vendingMachine.countIngredient(vendingMachine.getSlots().get(i).get(0).getName()));
-            System.out.println("");
-        }
     }
 
     private void showSetPriceDialog() {
@@ -607,7 +586,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                 String labelText = label.getText();
                 if (labelText.contains(item.getName())) {
                     String newLabelText = "<html>Calorie: " + item.getCalorie() + "<br>Name: " + item.getName() +
-                                          "<br>Price: " + item.getPrice() + "<br>Quantity: " + item.getQuantity() + "</html>";
+                                          "<br>Price: " + item.getPrice() + "<br>Quantity: " + vendingMachine.countIngredient(item.getName()) + "</html>";
                     label.setText(newLabelText);
                     break;
                 }
@@ -767,6 +746,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
         currentSlots++;
 
         FoodItem foodItem = new FoodItem(imagePath, calorie, name, price);
+        quantity = vendingMachine.countIngredient(name);
         foodItem.setQuantity(quantity);
         foodItems.add(foodItem);
 
