@@ -273,6 +273,14 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                         vendingMachine.updateCurrentInventory();
                         JOptionPane.showMessageDialog(null,receipt,"RECEIPT", JOptionPane.INFORMATION_MESSAGE);
                         onBalanceUpdated(0);
+                    } else if(selectedItem.getQuantity() == 0){
+                        for(int i = 0; i < vendingMachine.getUserDenominations().size(); i++){
+                            vendingMachine.collectDenomination(vendingMachine.getUserDenominations().get(i).getValue(), 1);
+                        }
+                        vendingMachine.clearUserDenominations();
+                        vendingMachine.updateCurrentUserBalance();
+                        updateBalanceLabel();
+                        showErrorMessage("Item is SOLD OUT!", "Error");
                     }
                     else{
                         for(int i = 0; i < vendingMachine.getUserDenominations().size(); i++){
@@ -284,11 +292,6 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                         updateBalanceLabel();
                         showErrorMessage("Insufficient Change", "Error");
                     }
-                }else if(selectedItem.getQuantity() == 0){
-                    vendingMachine.clearUserDenominations();
-                    vendingMachine.updateCurrentUserBalance();
-                    updateBalanceLabel();
-                    showErrorMessage("Item is SOLD OUT!", "Error");
                 } else {
                     showErrorMessage("Please select a valid predefined item.", "Error");
                 }
@@ -518,13 +521,13 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
 
     private void addPredefinedIngredients() {
         HashMap<String, FoodItem> predefinedIngredients = new HashMap<>();
-        predefinedIngredients.put("Espresso Roast", new FoodItem("1.png", "5", "Espresso Roast", "999"));
+        predefinedIngredients.put("Roast Nuts", new FoodItem("1.png", "5", "Roast Nuts", "999"));
         predefinedIngredients.put("Milk", new FoodItem("6.png", "146", "Milk", "99"));
         predefinedIngredients.put("Vanilla Syrup", new FoodItem("9.png", "77", "Vanilla Syrup", "49"));
         predefinedIngredients.put("Caramel Syrup", new FoodItem("7.png", "30", "Caramel Syrup", "49"));
         predefinedIngredients.put("Chocolate Chips", new FoodItem("5.png", "136", "Chocolate Chips", "29"));
         predefinedIngredients.put("Whipped Cream", new FoodItem("3.png", "72", "Whipped Cream", "199"));
-        predefinedIngredients.put("Milk Whisk", new FoodItem("8.png", "149", "Milk Whisk", "59"));
+        predefinedIngredients.put("Coconut", new FoodItem("8.png", "149", "Coconut", "59"));
         predefinedIngredients.put("Hot Water", new FoodItem("4.png", "12", "Hot Water", "1"));
         predefinedIngredients.put("Cinnamon", new FoodItem("2.png", "19", "Cinnamon", "189"));
         predefinedIngredients.put("Espresso", new FoodItem("10.png", "3", "Espresso", "349"));
