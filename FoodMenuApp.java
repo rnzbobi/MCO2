@@ -52,7 +52,7 @@ class FoodItem {
     }
 }
 
-public class FoodMenuApp extends JFrame{
+public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUpdateListener{
     private VendingMachineFactory vendingMachineFactory;
     private RegularVendingMachine vendingMachine;
     private ArrayList<FoodItem> foodItems;
@@ -74,6 +74,9 @@ public class FoodMenuApp extends JFrame{
     private static Map<String, FoodMenuApp> instances = new HashMap<>();
     // New instance variable for Owner's Balance
     private int ownerBalance = 0;
+    private boolean isOwnerMode = false;
+    private boolean isReplenish = false;
+    private int userBalance = 0;
     private JTextField balanceToTransferField; // Add balanceToTransferField as a class-level variable
     
     public FoodMenuApp(String machineName) {
@@ -158,7 +161,9 @@ public class FoodMenuApp extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Show the MoneyInsertionFrame
-                new MoneyInsertionFrame().setVisible(true);
+                MoneyInsertionFrame moneyInsertionFrame = new MoneyInsertionFrame();
+                moneyInsertionFrame.setBalanceUpdateListener(FoodMenuApp.this);
+                moneyInsertionFrame.setVisible(true);
             }
         });
 
@@ -195,6 +200,11 @@ public class FoodMenuApp extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Implement the logic to collect items here
+                isOwnerMode = true; // Set the frame in "Owner" mode
+                MoneyInsertionFrame moneyInsertionFrame = new MoneyInsertionFrame();
+                moneyInsertionFrame.setBalanceUpdateListener(FoodMenuApp.this);
+                moneyInsertionFrame.setOwnerMode(true);
+                moneyInsertionFrame.setVisible(true);
             }
         });
 
@@ -204,6 +214,11 @@ public class FoodMenuApp extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Implement the logic to replenish items here
+                isReplenish = true; // Set the frame in "Replenish" mode
+                MoneyInsertionFrame moneyInsertionFrame = new MoneyInsertionFrame();
+                moneyInsertionFrame.setBalanceUpdateListener(FoodMenuApp.this);
+                moneyInsertionFrame.setReplenishMode(true);
+                moneyInsertionFrame.setVisible(true);
             }
         });
 
@@ -330,6 +345,42 @@ public class FoodMenuApp extends JFrame{
         frame.setVisible(true);
     }
 
+    @Override
+    public void onBalanceUpdated(int balance) {
+        // Deduct the balance from "Owner's Balance" if in "Owner" mode
+        if (isOwnerMode) {
+            if(vendingMachine.collectDenomination(balance, 1)){
+                ownerBalance -= balance;
+                vendingMachine.updateCurrentBalance();
+            } else {
+                //
+                ownerBalance -= 0;
+                JOptionPane.showMessageDialog(this, "Cannot collect money. Denomination not available.", "Collect Money", JOptionPane.WARNING_MESSAGE);
+            }
+            isOwnerMode = false;
+        } else if (isReplenish) {
+            vendingMachine.addDenomination(balance);
+            vendingMachine.updateCurrentBalance();
+            ownerBalance += balance;
+            isReplenish = false;
+        } else {
+            // Update the user's balance label
+            vendingMachine.addUserDenomination(balance);
+            vendingMachine.addDenomination(balance);
+            vendingMachine.updateCurrentBalance();
+            vendingMachine.updateCurrentUserBalance();
+            userBalance += balance; // Add the new amount to the existing userBalance
+        }
+    
+        // Update the balance label with the current balances
+        balanceLabel.setText("BALANCE: " + userBalance + "                                                                                                  OWNER'S BALANCE: " + ownerBalance);
+    }
+
+    // Helper method to update the balance label with the current owner balance
+    private void updateBalanceLabel() {
+        balanceLabel.setText("BALANCE: 0                                                                                                  OWNER'S BALANCE: " + ownerBalance);
+    }
+
     public static FoodMenuApp getInstance(String machineName) {
         if (!instances.containsKey(machineName)) {
             instances.put(machineName, new FoodMenuApp(machineName));
@@ -425,11 +476,6 @@ public class FoodMenuApp extends JFrame{
         fundsDialog.pack();
         fundsDialog.setLocationRelativeTo(frame); // Center the dialog relative to the frame
         fundsDialog.setVisible(true);
-    }
-
-    // Helper method to update the balance label with the current owner balance
-    private void updateBalanceLabel() {
-        balanceLabel.setText("BALANCE: 0                                                                                                  OWNER'S BALANCE: " + ownerBalance);
     }
 
     // Method to set the machine name in the nameLabel

@@ -21,9 +21,9 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         return super.selectItem(itemName);
     }
 
-    public Ingredient removeItem(String itemName){
+    /*public Ingredient removeItem(String itemName){
         return super.removeItem(itemName);
-    }
+    }*/
 
     public boolean addSlot(ArrayList<Ingredient> slot){
         return super.addSlot(slot);

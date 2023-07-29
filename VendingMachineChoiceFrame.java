@@ -12,7 +12,6 @@ public class VendingMachineChoiceFrame extends JFrame {
     public VendingMachineChoiceFrame() {
         initUI();
     }
-
     private void initUI() {
         setTitle("Vending Machine Selection");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
