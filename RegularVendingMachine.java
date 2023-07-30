@@ -23,7 +23,7 @@ public class RegularVendingMachine{
         this.currentBalance = 0;
         this.startingInventory = new HashMap<Ingredient, Integer>();
         this.currentInventory = new HashMap<Ingredient, Integer>();
-        this.salesRecord = new Sales(0,0);
+        this.salesRecord = new Sales();
     }
 
     public void sortDenominationsDescending() {

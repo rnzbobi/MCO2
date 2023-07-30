@@ -1,10 +1,12 @@
 public class Sales {
     protected int totalSales;
     protected int totalIngredientsSold;
+    protected int totalCoffeeSold;
 
-    public Sales(int totalSales, int totalIngredientsSold){
-        this.totalSales = totalSales;
-        this.totalIngredientsSold = totalIngredientsSold;
+    public Sales(){
+        this.totalSales = 0;
+        this.totalIngredientsSold = 0;
+        this.totalCoffeeSold = 0;
     }
 
     public int getTotalSales() {
@@ -15,11 +17,19 @@ public class Sales {
         return totalIngredientsSold;
     }
 
+    public int getTotalCoffeeSold(){
+        return totalCoffeeSold;
+    }
+
     public void setTotalSales(int totalSales) {
         this.totalSales = totalSales;
     }
 
     public void setTotalIngredientsSold(int totalIngredientsSold) {
         this.totalIngredientsSold = totalIngredientsSold;
+    }
+
+    public void updateCoffeeSold(){
+        this.totalCoffeeSold += 1;
     }
 }

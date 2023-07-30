@@ -271,6 +271,8 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                         vendingMachine.updateSales(selectedItemName);
                         vendingMachine.removeItem(selectedItemName);
                         vendingMachine.updateCurrentInventory();
+                        JOptionPane.showMessageDialog(null,"Dispensing item....");
+                        JOptionPane.showMessageDialog(null,"Generating receipt....");
                         JOptionPane.showMessageDialog(null,receipt,"RECEIPT", JOptionPane.INFORMATION_MESSAGE);
                         onBalanceUpdated(0);
                     } else if(selectedItem.getQuantity() == 0){
