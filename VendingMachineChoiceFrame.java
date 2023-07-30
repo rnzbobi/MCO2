@@ -48,7 +48,14 @@ public class VendingMachineChoiceFrame extends JFrame {
         startSpecialButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Do nothing for the Special Vending Machine
+                // Get the entered machine name
+                String machineName = machineNameField.getText();
+
+                // Close the VendingMachineChoiceFrame
+                dispose();
+
+                // Launch the FoodMenuApp with the entered machine name
+                SpecialFoodMenuApp.getInstance(machineName);
             }
         });
 
