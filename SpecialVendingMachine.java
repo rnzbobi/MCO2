@@ -8,78 +8,6 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         this.coffeeIngredients = new ArrayList<>();
     }
 
-    public void sortDenominationsDescending() {
-        super.sortDenominationsDescending();
-    }
-
-    public Change dispenseChange(int amountToPay, int amountInserted){
-        return super.dispenseChange(amountToPay, amountInserted);
-    }
-
-    public boolean addIngredient(String name, int calories, int price, int quantity){
-        return super.addIngredient(name, calories, price, quantity);
-    }
-
-    public boolean addQuantity(String name, int quantity){
-        return super.addQuantity(name, quantity);
-    }
-
-    public Ingredient selectItem(String itemName){
-        return super.selectItem(itemName);
-    }
-
-    public boolean removeItem(String itemName){
-        return super.removeItem(itemName);
-    }
-
-    public boolean addSlot(ArrayList<Ingredient> slot){
-        return super.addSlot(slot);
-    }
-
-    public boolean removeIngredient(String itemname){
-        return super.removeIngredient(itemname);
-    }
-
-    public boolean addDenomination(int value) {
-        return super.addDenomination(value);
-    }
-
-    public boolean addUserDenomination(int value) {
-        return super.addUserDenomination(value);
-    }
-
-    public boolean collectDenomination(int value, int quantity){
-        return super.collectDenomination(value, quantity);
-    }
-
-    public String createSummary(){
-        return super.createSummary();
-    }
-
-    public int countIngredient(String ingredientName){
-        return super.countIngredient(ingredientName);
-    }
-
-    public void updateCurrentBalance(){
-        super.updateCurrentBalance();
-    }
-
-    public void updateCurrentUserBalance(){
-        super.updateCurrentUserBalance();
-    }
-
-    public void updateStartingInventory(){
-        super.updateStartingInventory();
-    }
-
-    public void updateCurrentInventory(){
-        super.updateCurrentInventory();
-    }
-
-    public void updateSales(String itemName){
-        super.updateSales(itemName);
-    }
-
     public void updateSales(Coffee coffee){
         for(int i = 0; i < coffeeIngredients.size(); i++){
             for(int j = 0; j < coffeeIngredients.get(i).size(); j++){
@@ -88,10 +16,6 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         }
         salesRecord.totalSales = coffee.getPrice();
         salesRecord.updateCoffeeSold();
-    }
-
-    public boolean setPrice(String itemName, int price){
-        return super.setPrice(itemName, price);
     }
 
     public boolean addCoffeeIngredient(String name, int quantity){
@@ -150,7 +74,7 @@ public class SpecialVendingMachine extends RegularVendingMachine{
 
         return new Coffee(calories, price, coffeeIngredients);
     }
-    
+
     public ArrayList<ArrayList<Ingredient>> getCoffeeIngredients(){
         return coffeeIngredients;
     }
