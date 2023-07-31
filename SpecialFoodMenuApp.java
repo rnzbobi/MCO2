@@ -55,7 +55,7 @@ class SpecialFoodItem {
 
 public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUpdateListener{
     private VendingMachineFactory vendingMachineFactory;
-    private RegularVendingMachine vendingMachine;
+    private SpecialVendingMachine vendingMachine;
     private ArrayList<SpecialFoodItem> foodItems;
     private JPanel innerPanel;
     private JScrollPane scrollPane;
@@ -80,9 +80,13 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
     private boolean isSubmit = false;
     private int userBalance = 0;
     private JTextField balanceToTransferField; // Add balanceToTransferField as a class-level variable
+    private ArrayList<String> nonSellableItems;
+    private JTextField ingredientTextField; // New instance variable
+    private JTextField quantityTextField; // New instance variable
     
     public SpecialFoodMenuApp(String machineName) {
         this.machineName = machineName;
+        nonSellableItems = new ArrayList<>();
         foodItems = new ArrayList<>();
         innerPanel = new JPanel(new GridLayout(0, columns, 10, 10));
         innerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -92,7 +96,7 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
 
         frame = new JFrame(machineName); // Set the machine name as the title of the frame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(1700, 960));
+        frame.setPreferredSize(new Dimension(1800, 960));
         // Create and set the preferred size for the buttons
         Dimension buttonSize = new Dimension(150, 50);
 
@@ -116,7 +120,7 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
         } while (maxItems <= 10);
 
         vendingMachineFactory = new VendingMachineFactory();
-        vendingMachine = vendingMachineFactory.createRegularVendingMachine(machineName, maxItems);
+        vendingMachine = vendingMachineFactory.createSpecialVendingMachine(machineName, maxItems);
         currentSlots = 0;
         addPredefinedIngredients();
 
@@ -168,6 +172,9 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null,vendingMachine.createSummary(),"Show Summary", JOptionPane.INFORMATION_MESSAGE);
                 vendingMachine.updateStartingInventory();
+                vendingMachine.salesRecord.setTotalSales(0);
+                vendingMachine.salesRecord.setTotalIngredientsSold(0);
+                vendingMachine.salesRecord.setTotalCoffeeSold(0);
             }
         });
 
@@ -246,7 +253,7 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
                 SpecialFoodItem selectedItem = findPredefinedItem(selectedItemName);
                 StringBuilder stringBuilder = new StringBuilder();
                 if (selectedItem != null) {
-                            // Check if the item is non-sellable (Milk, Vanilla Syrup, Caramel Syrup, Coconut, Cinnamon, Espresso)
+                    // Check if the item is non-sellable (Milk, Vanilla Syrup, Caramel Syrup, Coconut, Cinnamon, Espresso)
                     if (!isSellableItem(selectedItemName)) {
                         showErrorMessage("This item is not sellable.", "Error");
                         return;
@@ -314,7 +321,7 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
         createCoffeeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openCreateCoffeeFrame();
+                showCreateCoffeeDialog();
             }
         });
         buttonPanel.add(createCoffeeButton);
@@ -350,15 +357,125 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
         frame.setVisible(true);
     }
 
-    private void openCreateCoffeeFrame() {
-        CreateCoffeeFrame createCoffeeFrame = new CreateCoffeeFrame();
-        createCoffeeFrame.setVisible(true);
+    private void showCreateCoffeeDialog() {
+        JDialog createCoffeeDialog = new JDialog(this, "Create Your Coffee", true);
+        createCoffeeDialog.setPreferredSize(new Dimension(700, 500));
+        createCoffeeDialog.setLayout(new BorderLayout());
+
+        // Title Label
+        JLabel titleLabel = new JLabel("CREATE YOUR COFFEE!");
+        titleLabel.setFont(new Font(titleLabel.getFont().getName(), Font.BOLD, 24));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        createCoffeeDialog.add(titleLabel, BorderLayout.NORTH);
+
+        // Slot Image Label (You can replace "path/to/slot/image.png" with your actual image path)
+        ImageIcon slotImageIcon = new ImageIcon("C:\\Users\\rhenz\\Documents\\GitHub\\MCO2\\Coffee.png");
+        JLabel slotImageLabel = new JLabel(slotImageIcon);
+        slotImageLabel.setHorizontalAlignment(JLabel.CENTER);
+        createCoffeeDialog.add(slotImageLabel, BorderLayout.CENTER);
+
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
+        // Add Ingredient Button
+        JButton addIngredientButton = new JButton("Add Ingredient");
+        addIngredientButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onAddIngredientButtonClicked();
+            }
+        });
+        buttonPanel.add(addIngredientButton);
+
+        // Ingredient Text Field
+        JTextField ingredientTextField = new JTextField(15);
+        buttonPanel.add(ingredientTextField);
+
+        // Quantity Text Field (New)
+        JTextField quantityTextField = new JTextField(5);
+        buttonPanel.add(new JLabel("Quantity:"));
+        buttonPanel.add(quantityTextField);
+
+        // Finish Button
+        JButton finishButton = new JButton("Finish");
+        finishButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Example action: Show a success message
+                showSuccessMessage();
+                createCoffeeDialog.dispose(); // Close the dialog
+            }
+        });
+        buttonPanel.add(finishButton);
+
+        // Cancel Button
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createCoffeeDialog.dispose(); // Close the dialog
+            }
+        });
+        buttonPanel.add(cancelButton);
+
+        createCoffeeDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Pack and center the dialog on the screen
+        createCoffeeDialog.pack();
+        createCoffeeDialog.setLocationRelativeTo(this);
+
+        createCoffeeDialog.setVisible(true); // Show the dialog modally
     }
+
+    private void onAddIngredientButtonClicked() {
+            String ingredient = ingredientTextField.getText().trim();
+            String quantityStr = quantityTextField.getText().trim();
+    
+            if (ingredient.isEmpty() || quantityStr.isEmpty()) {
+                showErrorMessage("Please enter both ingredient and quantity.");
+                return;
+            }
+    
+            int quantity;
+            try {
+                quantity = Integer.parseInt(quantityStr);
+            } catch (NumberFormatException ex) {
+                showErrorMessage("Please enter a valid quantity.");
+                return;
+            }
+    
+            if (!nonSellableItems.contains(ingredient)) {
+                showErrorMessage("Invalid ingredient");
+                return;
+            }
+    
+            // Here, you can check if the quantity is less than or equal to the quantity stored in the display.
+            // Replace the condition below with your actual check.
+            int displayQuantity = 0; // Replace this with the actual quantity from the display.
+            if (quantity <= displayQuantity) {
+                showSuccessMessage();
+            } else {
+                showErrorMessage("The quantity is greater than the available quantity in the display.");
+            }
+        }
+    
+        private void showErrorMessage(String message) {
+            JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    
+        private void showSuccessMessage() {
+            JOptionPane.showMessageDialog(this, "Success!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
 
     // Helper method to check if an item is non-sellable
     private boolean isSellableItem(String itemName) {
         // List of non-sellable items
-        String[] nonSellableItems = {"Milk", "Vanilla Syrup", "Caramel Syrup", "Coconut", "Cinnamon", "Espresso"};
+        nonSellableItems.add("Milk");
+        nonSellableItems.add("Vanilla Syrup");
+        nonSellableItems.add("Caramel Syrup");
+        nonSellableItems.add("Coconut");
+        nonSellableItems.add("Cinnamon");
+        nonSellableItems.add("Espresso");
 
         // Check if the itemName is in the non-sellable items array
         for (String item : nonSellableItems) {
@@ -699,7 +816,13 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
         int calorie = Integer.parseInt(calorieStr);
         int price = Integer.parseInt(priceStr);
         int quantity = Integer.parseInt(quantityStr);
-
+    
+        boolean isSellable = askIfSellable(); // Ask if the item is sellable
+    
+        if (!isSellable) {
+            nonSellableItems.add(name);
+        }
+        
         vendingMachine.addIngredient(name, calorie, price, quantity);
         vendingMachine.updateCurrentInventory();
         addFoodItem(imagePath, String.valueOf(calorie), name, String.valueOf(price), quantity);
@@ -708,6 +831,12 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
     
     private String askForImagePath() {
         return showStringInputDialog("Enter image path (e.g., example.jpg):");
+    }
+
+    private boolean askIfSellable() {
+        int option = JOptionPane.showConfirmDialog(null, "Is the item sellable?", "Sellable Item",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        return option == JOptionPane.YES_OPTION;
     }
     
     private String askForCalorieCount() {

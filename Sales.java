@@ -29,6 +29,10 @@ public class Sales {
         this.totalIngredientsSold = totalIngredientsSold;
     }
 
+    public void setTotalCoffeeSold(int totalCoffeeSold) {
+        this.totalCoffeeSold = totalCoffeeSold;
+    }
+
     public void updateCoffeeSold(){
         this.totalCoffeeSold += 1;
     }

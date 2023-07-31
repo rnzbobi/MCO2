@@ -8,6 +8,10 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         this.coffeeIngredients = new ArrayList<>();
     }
 
+    public SpecialVendingMachine(){
+        super("",0);
+    }
+
     public void updateSales(Coffee coffee){
         for(int i = 0; i < coffeeIngredients.size(); i++){
             for(int j = 0; j < coffeeIngredients.get(i).size(); j++){
@@ -16,6 +20,47 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         }
         salesRecord.totalSales = coffee.getPrice();
         salesRecord.updateCoffeeSold();
+    }
+
+    @Override
+    public String createSummary() {
+        StringBuilder stringBuilder = new StringBuilder();
+    
+        stringBuilder.append("SUMMARY OF SALES SINCE LAST MAINTENANCE\n\n");
+        stringBuilder.append("Total Sales: Php " + salesRecord.getTotalSales() + "\n");
+        stringBuilder.append("Total Items Sold: " + salesRecord.getTotalIngredientsSold() + "\n");
+        stringBuilder.append("Total Coffee Sold: " + salesRecord.getTotalCoffeeSold() + "\n\n");
+    
+        stringBuilder.append("+-----------------------------+\n");
+        stringBuilder.append("|   Starting Inventory   |\n");
+        stringBuilder.append("+-----------------------------+\n");
+    
+        for (Map.Entry<Ingredient, Integer> entry : startingInventory.entrySet()) {
+            Ingredient ingredient = entry.getKey();
+            int quantity = entry.getValue();
+            String name = ingredient.getName();
+    
+            stringBuilder.append("[" + quantity + "] " + name + "\n");
+        }
+    
+        stringBuilder.append("+-----------------------------+\n\n");
+    
+        stringBuilder.append("+-----------------------------+\n");
+        stringBuilder.append("|   Current Inventory   |\n");
+        stringBuilder.append("+-----------------------------+\n");
+    
+        for (Map.Entry<Ingredient, Integer> entry : currentInventory.entrySet()) {
+            Ingredient ingredient = entry.getKey();
+            int quantity = entry.getValue();
+            String name = ingredient.getName();
+    
+            stringBuilder.append("[" + quantity + "] " + name + "\n");
+        }
+    
+        stringBuilder.append("+-----------------------------+\n\n");
+        stringBuilder.append("Summary Done!\n");
+    
+        return stringBuilder.toString();
     }
 
     public boolean addCoffeeIngredient(String name, int quantity){
@@ -73,6 +118,10 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         }
 
         return new Coffee(calories, price, coffeeIngredients);
+    }
+
+    public void removeCoffeeIngredients(){
+        coffeeIngredients.clear();
     }
 
     public ArrayList<ArrayList<Ingredient>> getCoffeeIngredients(){
