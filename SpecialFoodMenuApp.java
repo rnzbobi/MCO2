@@ -452,8 +452,14 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
             // Here, you can check if the quantity is less than or equal to the quantity stored in the display.
             // Replace the condition below with your actual check.
             int displayQuantity = 0; // Replace this with the actual quantity from the display.
-            if (quantity <= displayQuantity) {
+            if (quantity <= vendingMachine.countIngredient(ingredient)) {
+                vendingMachine.addCoffeeIngredient(ingredient,quantity);
                 showSuccessMessage();
+                for(ArrayList<Ingredient> coffeeingredientList : vendingMachine.getCoffeeIngredients()){
+                    for(Ingredient coffeeingredient : coffeeingredientList){
+                        System.out.println(coffeeingredient.getName());
+                    }
+                }
             } else {
                 showErrorMessage("The quantity is greater than the available quantity in the display.");
             }
