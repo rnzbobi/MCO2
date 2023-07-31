@@ -249,7 +249,7 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
                     int count = 0;
                     if(change != null){
                         stringBuilder.append("+-----------------------+\n");
-                        stringBuilder.append("|       Receipt   |\n");
+                        stringBuilder.append("|       Receipt     |\n");
                         stringBuilder.append("+-----------------------+\n");
                         stringBuilder.append("[1] " + selectedItem.getName() + "\n");
                         stringBuilder.append("+-----------------------+\n");
@@ -504,21 +504,22 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
     }
 
     private class NumberPadActionListener implements ActionListener {
+        private int enteredAmount = 0;
+    
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton button = (JButton) e.getSource();
             String buttonText = button.getText();
-            String currentMoney = moneyField.getText();
-            moneyField.setText(currentMoney + buttonText);
-
-                // Update the balance to transfer field
-                if (isValidPositiveInteger(moneyField.getText())) {
-                    int amount = Integer.parseInt(moneyField.getText());
-                    balanceToTransferField.setText("Balance to Transfer: " + amount);
-                } else {
-                    balanceToTransferField.setText("Balance to Transfer: 0");
-                }
-            }
+            int denomination = Integer.parseInt(buttonText);
+    
+            enteredAmount = denomination; // Update the enteredAmount with the current denomination
+    
+            // Update the moneyField with the enteredAmount
+            moneyField.setText(String.valueOf(enteredAmount));
+    
+            // Update the balance to transfer field
+            balanceToTransferField.setText("Balance to Transfer: " + enteredAmount);
+        }
     }
 
     private void addPredefinedIngredients() {
@@ -600,33 +601,40 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
     }
 
     private boolean showAddFoodItemDialog(FoodItem predefinedItem) {
-        String quantityStr = showIntegerInputDialog("Enter quantity for " + predefinedItem.getName() + ":");
-        if (quantityStr == null) {
-            return false; // User canceled or closed the dialog, do nothing
-        }
-
-        try {
-            int quantity = Integer.parseInt(quantityStr);
-            if (quantity <= 0) {
-                showErrorMessage("Invalid quantity. Please enter a positive integer.", "Error");
-                return false; // Quantity must be a positive integer
+        int quantity = 0;
+        while (true) {
+            String quantityStr = showIntegerInputDialog("Enter quantity for " + predefinedItem.getName() + ":");
+            if (quantityStr == null) {
+                return false; // User canceled or closed the dialog, do nothing
             }
-
-            predefinedItem.setQuantity(quantity);
-
-            if (predefinedItem.getQuantity() >= 10) {
-                vendingMachine.addIngredient(predefinedItem.getName(), Integer.parseInt(predefinedItem.getCalorie()), Integer.parseInt(predefinedItem.getPrice()), quantity);
-                vendingMachine.updateStartingInventory();
-                vendingMachine.updateCurrentInventory();
-                addFoodItem(predefinedItem.getImagePath(), predefinedItem.getCalorie(), predefinedItem.getName(), predefinedItem.getPrice(), quantity);
-                innerPanel.revalidate();
-            } else {
-                // Notify the user that the quantity is less than 10 and not added to the list
-                showErrorMessage("Quantity must be at least 10.", "Warning");
+    
+            try {
+                quantity = Integer.parseInt(quantityStr);
+                if (quantity <= 0) {
+                    showErrorMessage("Invalid quantity. Please enter a positive integer.", "Error");
+                    continue; // Quantity must be a positive integer, so continue the loop
+                }
+    
+                predefinedItem.setQuantity(quantity);
+    
+                if (predefinedItem.getQuantity() >= 10) {
+                    vendingMachine.addIngredient(predefinedItem.getName(), Integer.parseInt(predefinedItem.getCalorie()), Integer.parseInt(predefinedItem.getPrice()), quantity);
+                    vendingMachine.updateStartingInventory();
+                    vendingMachine.updateCurrentInventory();
+                    addFoodItem(predefinedItem.getImagePath(), predefinedItem.getCalorie(), predefinedItem.getName(), predefinedItem.getPrice(), quantity);
+                    innerPanel.revalidate();
+                } else {
+                    // Notify the user that the quantity is less than 10 and not added to the list
+                    showErrorMessage("Quantity must be at least 10.", "Warning");
+                    continue; // Quantity is less than 10, so continue the loop
+                }
+    
+                break; // Break out of the loop if the quantity is valid and >= 10
+            } catch (NumberFormatException ex) {
+                showErrorMessage("Invalid quantity. Please enter a valid integer.", "Error");
             }
-        } catch (NumberFormatException ex) {
-            showErrorMessage("Invalid quantity. Please enter a valid integer.", "Error");
         }
+    
         return true;
     }
 

@@ -136,10 +136,10 @@ public class MoneyInsertionFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             JButton button = (JButton) e.getSource();
             String buttonText = button.getText();
-
+    
             if (denominations.containsKey(buttonText)) {
                 int amount = denominations.get(buttonText);
-                totalAmount += amount; // Update the totalAmount when a number pad button is clicked
+                totalAmount = amount; // Update the totalAmount with the value of the current denomination
                 updateMoneyField();
             }
         }

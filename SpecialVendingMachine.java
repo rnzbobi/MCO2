@@ -8,17 +8,14 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         this.coffeeIngredients = new ArrayList<>();
     }
 
-    public SpecialVendingMachine(){
-        super("",0);
-    }
-
     public void updateSales(Coffee coffee){
+        int price = coffee.getPrice();
         for(int i = 0; i < coffeeIngredients.size(); i++){
             for(int j = 0; j < coffeeIngredients.get(i).size(); j++){
                 salesRecord.totalIngredientsSold += 1;
             }
         }
-        salesRecord.totalSales = coffee.getPrice();
+        salesRecord.totalSales += price;
         salesRecord.updateCoffeeSold();
     }
 
@@ -118,6 +115,19 @@ public class SpecialVendingMachine extends RegularVendingMachine{
         }
 
         return new Coffee(calories, price, coffeeIngredients);
+    }
+
+    public int countCoffeeIngredient(String ingredientName){
+        int count = 0;
+        for (ArrayList<Ingredient> coffeeIngredientsList : coffeeIngredients) {
+            for (Ingredient coffeeIngredients : coffeeIngredientsList) {
+                if (coffeeIngredients.getName().equalsIgnoreCase(ingredientName)) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
     }
 
     public void removeCoffeeIngredients(){
