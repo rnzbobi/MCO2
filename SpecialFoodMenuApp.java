@@ -388,11 +388,11 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
         buttonPanel.add(addIngredientButton);
 
         // Ingredient Text Field
-        JTextField ingredientTextField = new JTextField(15);
+        ingredientTextField = new JTextField(15);
         buttonPanel.add(ingredientTextField);
 
         // Quantity Text Field (New)
-        JTextField quantityTextField = new JTextField(5);
+        quantityTextField = new JTextField(5);
         buttonPanel.add(new JLabel("Quantity:"));
         buttonPanel.add(quantityTextField);
 
