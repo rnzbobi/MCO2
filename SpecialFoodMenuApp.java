@@ -321,6 +321,7 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
         createCoffeeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "All ingredients that are priced Php 70 above, are fixed at Php 50!");
                 showCreateCoffeeDialog();
             }
         });
@@ -407,95 +408,100 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
                 int count = 0;
                 Coffee coffee = vendingMachine.createCoffee();
 
-                Change change = vendingMachine.dispenseChange(coffee.getPrice(), vendingMachine.getCurrentUserBalance());
-                if(change != null){
-                    vendingMachine.updateSales(coffee);
-                    coffee.setCoffeeName();
-                    stringBuilder.append("+-----------------------+\n");
-                    stringBuilder.append("|       Receipt     |\n");
-                    stringBuilder.append("+-----------------------+\n");
+                if(coffee != null){
+                    Change change = vendingMachine.dispenseChange(coffee.getPrice(), vendingMachine.getCurrentUserBalance());
+                    if(change != null){
+                        vendingMachine.updateSales(coffee);
+                        coffee.setCoffeeName();
+                        stringBuilder.append("+-----------------------+\n");
+                        stringBuilder.append("|       Receipt     |\n");
+                        stringBuilder.append("+-----------------------+\n");
 
-                    for(int i = 0; i < vendingMachine.getCoffeeIngredients().size(); i++){
-                        if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Hot Water")){
-                            stringBuilder2.append("Pouring hot water...\n");
+                        for(int i = 0; i < vendingMachine.getCoffeeIngredients().size(); i++){
+                            if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Hot Water")){
+                                stringBuilder2.append("Pouring hot water...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Milk")){
+                                stringBuilder2.append("Pouring milk...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Espresso")){
+                                stringBuilder2.append("Brewing espresso...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Vanilla Syrup")){
+                                stringBuilder2.append("Adding vanilla syrup...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Caramel Syrup")){
+                                stringBuilder2.append("Drizzling caramel syrup...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Coconut")){
+                                stringBuilder2.append("Adding coconut shavings...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Roast Nuts")){
+                                stringBuilder2.append("Roasting nuts...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Chocolate Chips")){
+                                stringBuilder2.append("Sprinkling chocolate chips...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Cinnamon")){
+                                stringBuilder2.append("Sprinkling cinnamon...\n");
+                            }
+                            else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Whipped Cream")){
+                                stringBuilder2.append("Topping with cream...\n");
+                            }
+                            else{
+                                stringBuilder2.append("Adding " + vendingMachine.getCoffeeIngredients().get(i).get(0).getName() + "...\n");
+                            }
+                            
+                            for(int j = 0; j < vendingMachine.getCoffeeIngredients().get(i).size(); j++){
+                                count++;
+                            }
+                            stringBuilder.append("[" + count + "] " + vendingMachine.getCoffeeIngredients().get(i).get(0).getName() + "\n");
+                            count = 0;
                         }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Milk")){
-                            stringBuilder2.append("Pouring milk...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Espresso")){
-                            stringBuilder2.append("Brewing espresso...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Vanilla Syrup")){
-                            stringBuilder2.append("Adding vanilla syrup...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Caramel Syrup")){
-                            stringBuilder2.append("Drizzling caramel syrup...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Coconut")){
-                            stringBuilder2.append("Adding coconut shavings...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Roast Nuts")){
-                            stringBuilder2.append("Roasting nuts...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Chocolate Chips")){
-                            stringBuilder2.append("Sprinkling chocolate chips...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Cinnamon")){
-                            stringBuilder2.append("Sprinkling cinnamon...\n");
-                        }
-                        else if(vendingMachine.getCoffeeIngredients().get(i).get(0).getName().equalsIgnoreCase("Whipped Cream")){
-                            stringBuilder2.append("Topping with cream...\n");
-                        }
-                        else{
-                            stringBuilder2.append("Adding " + vendingMachine.getCoffeeIngredients().get(i).get(0).getName() + "...\n");
-                        }
-                        
-                        for(int j = 0; j < vendingMachine.getCoffeeIngredients().get(i).size(); j++){
-                            count++;
-                        }
-                        stringBuilder.append("[" + count + "] " + vendingMachine.getCoffeeIngredients().get(i).get(0).getName() + "\n");
-                        count = 0;
-                    }
-                    stringBuilder.append("\n" + coffee.getName() + "\n\n");
-                    stringBuilder.append("Total Calories: " + coffee.getCalories() + "\n");
-                    stringBuilder.append("+-----------------------+\n");
-                    stringBuilder.append("Total: " + coffee.getPrice() + "\n");
-                    stringBuilder.append("Amount Paid: " + vendingMachine.getCurrentUserBalance() + "\n");
-                    stringBuilder.append("Change: " + (vendingMachine.getCurrentUserBalance() - coffee.getPrice()) + "\n");
+                        stringBuilder.append("\n" + coffee.getName() + "\n\n");
+                        stringBuilder.append("Total Calories: " + coffee.getCalories() + "\n");
+                        stringBuilder.append("+-----------------------+\n");
+                        stringBuilder.append("Total: " + coffee.getPrice() + "\n");
+                        stringBuilder.append("Amount Paid: " + vendingMachine.getCurrentUserBalance() + "\n");
+                        stringBuilder.append("Change: " + (vendingMachine.getCurrentUserBalance() - coffee.getPrice()) + "\n");
 
-                    for(int i = 0; i < change.getDenominations().size(); i++){
-                        count = 0;
-                        stringBuilder.append(change.getDenominations().get(i).get(0).getValue());
-                        for(int j = 0; j < change.getDenominations().get(i).size(); j++){
-                            count++;
+                        for(int i = 0; i < change.getDenominations().size(); i++){
+                            count = 0;
+                            stringBuilder.append(change.getDenominations().get(i).get(0).getValue());
+                            for(int j = 0; j < change.getDenominations().get(i).size(); j++){
+                                count++;
+                            }
+                            stringBuilder.append(": " + count + "\n");
                         }
-                        stringBuilder.append(": " + count + "\n");
-                    }
-                    stringBuilder.append("+-----------------------+\n");
-                    stringBuilder.append("Thank you for Purchasing!");
-                    vendingMachine.updateSlots(coffee.getIngredients());
-                    vendingMachine.updateCurrentInventory();
-                    vendingMachine.updateCurrentBalance();
-                    vendingMachine.updateCurrentUserBalance();
-                    vendingMachine.removeCoffeeIngredients();
-                    String process = stringBuilder2.toString();
-                    String receipt = stringBuilder.toString();
-                    JOptionPane.showMessageDialog(null,process,"Process", JOptionPane.INFORMATION_MESSAGE);
-                    JOptionPane.showMessageDialog(null,"Dispensing item....");
-                    JOptionPane.showMessageDialog(null,"Generating receipt....");
-                    JOptionPane.showMessageDialog(null,receipt,"RECEIPT", JOptionPane.INFORMATION_MESSAGE);
-                    onBalanceUpdated(0);
+                        stringBuilder.append("+-----------------------+\n");
+                        stringBuilder.append("Thank you for Purchasing!");
+                        vendingMachine.updateSlots(coffee.getIngredients());
+                        vendingMachine.updateCurrentInventory();
+                        vendingMachine.updateCurrentBalance();
+                        vendingMachine.updateCurrentUserBalance();
+                        vendingMachine.removeCoffeeIngredients();
+                        String process = stringBuilder2.toString();
+                        String receipt = stringBuilder.toString();
+                        JOptionPane.showMessageDialog(null,process,"Process", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null,"Dispensing item....");
+                        JOptionPane.showMessageDialog(null,"Generating receipt....");
+                        JOptionPane.showMessageDialog(null,receipt,"RECEIPT", JOptionPane.INFORMATION_MESSAGE);
+                        onBalanceUpdated(0);
                 }
                 else{
+                    showErrorMessage("Insufficient Change\n" + "Total: " + coffee.getPrice() + "\n" + "Your balance: " + vendingMachine.getCurrentUserBalance(), "Error");
                     for(int i = 0; i < vendingMachine.getUserDenominations().size(); i++){
                         vendingMachine.collectDenomination(vendingMachine.getUserDenominations().get(i).getValue(), 1);
                     }
                     vendingMachine.clearUserDenominations();
                     vendingMachine.removeCoffeeIngredients();
                     vendingMachine.updateCurrentUserBalance();
-                    showErrorMessage("Insufficient Change", "Error");
                     updateBalanceLabel();
                 }
+            }
+            else{
+                showErrorMessage("No ingredients added to your coffee!", "Error");
+            }
                 createCoffeeDialog.dispose(); // Close the dialog
                 for(SpecialFoodItem foodItem: foodItems){
                     updateQuantityDisplay(foodItem);
@@ -822,6 +828,11 @@ public class SpecialFoodMenuApp extends JFrame implements MoneyInsertionFrame.Ba
     
         String newPriceStr = JOptionPane.showInputDialog(frame, "Enter the new price for " + ingredientName + ":");
         if (newPriceStr == null || newPriceStr.trim().isEmpty()) {
+            showErrorMessage("Invalid price. Please enter a valid integer.", "Error");
+            return;
+        }
+
+        if(Integer.parseInt(newPriceStr) <= 0){
             showErrorMessage("Invalid price. Please enter a valid integer.", "Error");
             return;
         }

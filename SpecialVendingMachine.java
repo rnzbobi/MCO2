@@ -91,24 +91,26 @@ public class SpecialVendingMachine extends RegularVendingMachine{
      */
     public boolean addCoffeeIngredient(String name, int quantity){
         boolean added = false;
-        for(int i = 0; i < slots.size(); i++){
-            if(slots.get(i).get(0).getName().equalsIgnoreCase(name)){
-                if(countIngredient(slots.get(i).get(0).getName()) >= quantity){
-                    for(int j = 0; j < coffeeIngredients.size(); j++){
-                        if(coffeeIngredients.get(j).get(0).getName().equalsIgnoreCase(name)){
-                            for(int k = 0; k < quantity; k++){
-                                coffeeIngredients.get(j).add(slots.get(i).get(0));
+        if(quantity > 0){
+            for(int i = 0; i < slots.size(); i++){
+                if(slots.get(i).get(0).getName().equalsIgnoreCase(name)){
+                    if(countIngredient(slots.get(i).get(0).getName()) >= quantity){
+                        for(int j = 0; j < coffeeIngredients.size(); j++){
+                            if(coffeeIngredients.get(j).get(0).getName().equalsIgnoreCase(name)){
+                                for(int k = 0; k < quantity; k++){
+                                    coffeeIngredients.get(j).add(slots.get(i).get(0));
+                                }
+                                return added = true;
                             }
+                        }
+                        if(!added){
+                            ArrayList<Ingredient> newSlot = new ArrayList<>();
+                            for(int l = 0; l < quantity; l++){
+                                newSlot.add(slots.get(i).get(0));
+                            }
+                            coffeeIngredients.add(newSlot);
                             return added = true;
                         }
-                    }
-                    if(!added){
-                        ArrayList<Ingredient> newSlot = new ArrayList<>();
-                        for(int l = 0; l < quantity; l++){
-                            newSlot.add(slots.get(i).get(0));
-                        }
-                        coffeeIngredients.add(newSlot);
-                        return added = true;
                     }
                 }
             }
@@ -142,18 +144,21 @@ public class SpecialVendingMachine extends RegularVendingMachine{
     public Coffee createCoffee(){
         int calories = 0, price = 0;
 
-        for(int i = 0; i < coffeeIngredients.size(); i++){
-            for(int j = 0; j < coffeeIngredients.get(i).size(); j++){
-                if(coffeeIngredients.get(i).get(0).getPrice() > 70){
-                    price += 50;
-                } else {
-                    price += coffeeIngredients.get(i).get(0).getPrice();
+        if(coffeeIngredients.size() > 0){
+            for(int i = 0; i < coffeeIngredients.size(); i++){
+                for(int j = 0; j < coffeeIngredients.get(i).size(); j++){
+                    if(coffeeIngredients.get(i).get(0).getPrice() > 70){
+                        price += 50;
+                    } else {
+                        price += coffeeIngredients.get(i).get(0).getPrice();
+                    }
+                    calories += coffeeIngredients.get(i).get(j).getCalories();
                 }
-                calories += coffeeIngredients.get(i).get(j).getCalories();
             }
-        }
 
         return new Coffee(calories, price, coffeeIngredients);
+        }
+        else return null;
     }
     /**
      * Counts the occurrences of a specific ingredient in the coffee ingredients list.

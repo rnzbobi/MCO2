@@ -50,7 +50,9 @@ public class Sales {
      * @param totalSales The new total sales amount to set.
      */
     public void setTotalSales(int totalSales) {
-        this.totalSales = totalSales;
+        if(totalSales >= 0){
+            this.totalSales = totalSales;
+        }
     }
 
     /**
@@ -59,7 +61,9 @@ public class Sales {
      * @param totalIngredientsSold The new total number of ingredients sold to set.
      */
     public void setTotalIngredientsSold(int totalIngredientsSold) {
-        this.totalIngredientsSold = totalIngredientsSold;
+        if (totalIngredientsSold >= 0){
+            this.totalIngredientsSold = totalIngredientsSold;
+        }
     }
 
     /**
@@ -68,7 +72,9 @@ public class Sales {
      * @param totalCoffeeSold The new total number of coffees sold to set.
      */
     public void setTotalCoffeeSold(int totalCoffeeSold) {
-        this.totalCoffeeSold = totalCoffeeSold;
+        if(totalCoffeeSold >= 0){
+            this.totalCoffeeSold = totalCoffeeSold;
+        }
     }
 
     /**

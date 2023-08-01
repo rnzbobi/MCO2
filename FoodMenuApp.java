@@ -167,6 +167,8 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(null,vendingMachine.createSummary(),"Show Summary", JOptionPane.INFORMATION_MESSAGE);
                 vendingMachine.updateStartingInventory();
+                vendingMachine.getSalesRecord().setTotalSales(0);
+                vendingMachine.getSalesRecord().setTotalIngredientsSold(0);
             }
         });
 
@@ -553,6 +555,11 @@ public class FoodMenuApp extends JFrame implements MoneyInsertionFrame.BalanceUp
     
         String newPriceStr = JOptionPane.showInputDialog(frame, "Enter the new price for " + ingredientName + ":");
         if (newPriceStr == null || newPriceStr.trim().isEmpty()) {
+            showErrorMessage("Invalid price. Please enter a valid integer.", "Error");
+            return;
+        }
+
+        if(Integer.parseInt(newPriceStr) <= 0){
             showErrorMessage("Invalid price. Please enter a valid integer.", "Error");
             return;
         }

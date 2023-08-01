@@ -53,7 +53,9 @@ public class Ingredient {
      * @param price The new price to set for the ingredient.
      */
     public void setPrice(int price) {
-        this.price = price;
+        if(price > 0){
+            this.price = price;
+        }
     }
 }
 

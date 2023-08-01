@@ -150,19 +150,21 @@ public class RegularVendingMachine{
      * @return true if the ingredient quantity was successfully increased, false otherwise.
      */
     public boolean addQuantity(String name, int quantity) {
-        for (int i = 0; i < slots.size(); i++) {
-            if (slots.get(i).get(0).getName().equalsIgnoreCase(name)) {
-                ArrayList<Ingredient> currentSlot = slots.get(i);
-                for (int j = 0; j < quantity; j++) {
-                    Ingredient newIngredient = new Ingredient(
-                        currentSlot.get(0).getName(),
-                        currentSlot.get(0).getCalories(),
-                        currentSlot.get(0).getPrice()
-                    );
-                    currentSlot.add(newIngredient);
+        if(quantity > 0){
+            for (int i = 0; i < slots.size(); i++) {
+                if (slots.get(i).get(0).getName().equalsIgnoreCase(name)) {
+                    ArrayList<Ingredient> currentSlot = slots.get(i);
+                    for (int j = 0; j < quantity; j++) {
+                        Ingredient newIngredient = new Ingredient(
+                            currentSlot.get(0).getName(),
+                            currentSlot.get(0).getCalories(),
+                            currentSlot.get(0).getPrice()
+                        );
+                        currentSlot.add(newIngredient);
+                    }
+                    updateCurrentInventory();
+                    return true;
                 }
-                updateCurrentInventory();
-                return true;
             }
         }
     
@@ -289,17 +291,19 @@ public class RegularVendingMachine{
      * @return true if the specified quantity of the denomination was successfully collected, false otherwise.
      */
     public boolean collectDenomination(int value, int quantity) {
-        for (int i = 0; i < denominations.size(); i++) {
-            if(denominations.get(i).get(0).getValue() == value){
-                if(denominations.get(i).size() == quantity){
-                    denominations.remove(i);
-                    return true;
-                }
-                else if(denominations.get(i).size() > quantity){
-                    for(int j = 0; j < quantity; j++){
-                        denominations.get(i).remove(j);
+        if(quantity > 0){
+            for (int i = 0; i < denominations.size(); i++) {
+                if(denominations.get(i).get(0).getValue() == value){
+                    if(denominations.get(i).size() == quantity){
+                        denominations.remove(i);
+                        return true;
                     }
-                    return true;
+                    else if(denominations.get(i).size() > quantity){
+                        for(int j = 0; j < quantity; j++){
+                            denominations.get(i).remove(j);
+                        }
+                        return true;
+                    }
                 }
             }
         }
@@ -440,7 +444,7 @@ public class RegularVendingMachine{
         boolean found = false;
         for (ArrayList<Ingredient> slot : slots) {
             for (Ingredient ingredient : slot) {
-                if (ingredient.getName().equalsIgnoreCase(itemName)) {
+                if (ingredient.getName().equalsIgnoreCase(itemName) && price > 0) {
                     ingredient.setPrice(price);
                     found = true;
                 }
