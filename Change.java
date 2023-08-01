@@ -1,3 +1,4 @@
+import java.util.*;
 /**
  * The Change class represents the denominations to be returned as change in a vending machine transaction.
  * It holds a list of denominations, where each element in the list represents a group of denominations of the same value.
